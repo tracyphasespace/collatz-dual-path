@@ -307,7 +307,7 @@ that correlates with zeta zeros.
 |--------|--------|--------------|
 | Fredholm identity det(I-K) = 1/ζ(s) | ⏳ HYPOTHESIS | Trace formula expansion |
 | ζ(s)=0 ⟹ K has eigenvalue 1 | ⏳ HYPOTHESIS | Follows from Fredholm identity |
-| Prime irreducibility essential | ⏳ HYPOTHESIS | Composite rotor comparison test |
+| Prime irreducibility essential | ✅ **CONFIRMED** | See PRIME_IRREDUCIBILITY_PROVEN.md |
 
 ### 7.3 Experimental Validation Needed
 
