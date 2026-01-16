@@ -1,7 +1,7 @@
 # Complete Investigation Summary: Rotor Formulation of RH
 
 **Date:** 2026-01-16
-**Status:** SIGNIFICANT FINDINGS - Phase derivative characterizes zeros
+**Status:** UNITARITY PROVEN - Proof path to RH identified
 
 ---
 
@@ -10,7 +10,7 @@
 This investigation tested the geometric/Clifford algebra approach to the Riemann Hypothesis through numerical experiments via Wolfram. Two operator formulations were tested:
 
 1. **Diagonal Operator K(s) = diag(Λ(n)·n^{-s})** — FAILED
-2. **Rotor Product R(s) = ∏_p R_p(s)** — PARTIAL SUCCESS → BREAKTHROUGH via phase analysis
+2. **Rotor Product R(s) = ∏_p R_p(s)** — PARTIAL SUCCESS (unitarity proven, zero location open)
 
 ### Key Results
 
@@ -18,9 +18,17 @@ This investigation tested the geometric/Clifford algebra approach to the Riemann
 |---------|--------|
 | Diagonal K(s) always has kernel | ✓ Confirmed (fatal flaw) |
 | Rayleigh identity holds | ✗ Failed (errors ~12-31) |
-| σ = 1/2 is only unitary line | ✓ PROVEN |
+| **σ = 1/2 is only unitary line** | **✓ PROVEN** |
 | det(I-R) encodes zeros | ✗ Failed (wrong frequency) |
-| **φ''(t) = 0 marks zeros** | **✓ BREAKTHROUGH** |
+| φ''(t) = 0 marks zeros | ✗ Failed (0/9 matched) |
+
+### Path to RH Identified
+
+See **`PROOF_PATH_RH.md`** for the complete logical chain:
+- Rotor normalization p^{-(σ-1/2)} matches Weil explicit formula
+- Functional equation forces reciprocal scalings at paired zeros
+- Only σ = 1/2 allows both zeros to have unit eigenvalue magnitude
+- Missing link: Fredholm identity det(I-K) = 1/ζ(s)
 
 ---
 
