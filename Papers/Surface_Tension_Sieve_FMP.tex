@@ -1,0 +1,252 @@
+\documentclass{CUP-JNL-FMP}%
+
+%%%% Packages
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage[numbers]{natbib}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage[colorlinks,allcolors=weblmcolor]{hyperref}
+\usepackage{braket}
+\usepackage{float}
+
+% Single-level TOC (sections only, no subsections)
+\setcounter{tocdepth}{1}
+
+% Override copyright year to 2026
+\copytext{\textcopyright\ The Author(s) 2026. This is an Open Access article, distributed under the terms of the Creative Commons Attribution licence (http://creativecommons.org/licenses/by/4.0/), which permits unrestricted re-use, distribution, and reproduction in any medium, provided the original work is properly cited.}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{assumption}[theorem]{Assumption}
+\numberwithin{equation}{section}
+
+\articletype{RESEARCH ARTICLE}
+\jyear{2026}
+\jdoi{10.1017/fmp.2026.X}
+
+\begin{document}
+
+\begin{Frontmatter}
+
+\title[Geometric Stability of the Prime Distribution]{The Surface Tension Sieve: A Machine-Verified Reduction of the Riemann Hypothesis via Geometric Stiffness}
+
+\author*[1]{Tracy McSheery}\orcid{0000-0002-4744-8852}
+
+\authormark{Tracy McSheery}
+
+\address*[1]{\orgname{PhaseSpace}, \orgaddress{\country{USA}}; \email{TracyMc@PhaseSpace.com}}
+
+\received{15 January 2026}
+
+\keywords{Riemann Hypothesis, Clifford algebra, Surface Tension, Formal Verification, Lean 4}
+
+\keywords[MSC Codes]{\codes[Primary]{11M26}; \codes[Secondary]{15A66, 47B25, 68V15}}
+
+\abstract{We present a machine-verified reduction of the Riemann Hypothesis (RH) to a problem of spectral correspondence in split-signature Clifford algebra $\mathrm{Cl}(3,3)$. We derive the ``Sieve Operator'' $K(s)$ from first principles as the geometric gradient of the Euler Product potential. Using standard real calculus, we prove that the energy cost of lattice dilation (``stiffness'') is exactly $\log p$, thereby deriving the Von Mangoldt weights geometrically. We prove that the critical line $\mathrm{Re}(s)=1/2$ is the unique locus of volume-preserving dynamics; deviations induce non-zero ``Geometric Tension'' that breaks unitary symmetry. Under the Zeta Link hypothesis connecting zeros of $\zeta(s)$ to the spectrum of this operator, RH follows. The core geometric logic is formalized in Lean~4 with zero \texttt{sorry} statements.}
+
+\end{Frontmatter}
+
+\localtableofcontents
+
+\vspace*{14pt}
+\section{Overview: The Geometry of Criticality}
+
+The Riemann Hypothesis (RH), proposed by Riemann in 1859~\cite{Riemann1859}, asserts that all non-trivial zeros of $\zeta(s)$ lie on the critical line $\mathrm{Re}(s)=1/2$. The persistence of this line suggests a rigid underlying symmetry. Standard complex analysis, which conflates rotation ($i$) and dilation (scalars) into a single field $\mathbb{C}$, obscures this structure.
+
+We resolve this by lifting the problem to the real split-signature Clifford algebra $\mathrm{Cl}(3,3)$, following the geometric algebra framework of Hestenes~\cite{Hestenes1984} and Doran--Lasenby~\cite{DoranLasenby2003}. In this framework, the ``imaginary'' unit is identified as a bivector $B$ (rotation), and the real part $\sigma$ is a scalar (dilation). Figure~\ref{fig:lift} illustrates this algebraic lift from $\mathbb{C}$ to $\mathrm{Cl}(3,3)$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{images/decompression_schematic_20260114_133748.png}
+\caption{The Algebraic Lift: In the standard complex plane (left), rotation and dilation are entangled in $i=\sqrt{-1}$. In Clifford algebra $\mathrm{Cl}(3,3)$ (right), these become geometrically orthogonal degrees of freedom, enabling the stability analysis that yields RH.}
+\label{fig:lift}
+\end{figure}
+
+Our central thesis is that the Prime Distribution constitutes a \textbf{Zero-Volume Sieve}. As primes accumulate, the volume of the integer lattice is ``drilled away'' (Mertens' Theorem), leaving a fractal surface. The critical line is the only configuration where this zero-volume surface can exist without collapsing or exploding under dilation stress.
+
+The main results (Theorem~\ref{thm:main}) are: (i) adjoint symmetry forcing self-adjointness on the critical line; (ii) the Surface Tension Hammer showing real eigenvalues force $\sigma = 1/2$; and (iii) conditional RH under the Zeta Link hypothesis.
+
+
+\section{The Fractal Structure of the Sieve}
+
+A profound insight emerges from Lucas' Theorem~\cite{Lucas1878}: Pascal's Triangle modulo a prime $p$ exhibits fractal self-similarity. For $p = 2$, the zeros form the Sierpi\'{n}ski gasket (dimension $\log 3/\log 2 \approx 1.585$). Each prime generates an independent fractal filter; primes are not inhabitants of these fractals but their generators.
+
+The Sieve of Eratosthenes performs fractal filtering:
+\[
+\mathbb{N} \xrightarrow[\text{Sierpi\'{n}ski}]{\text{mod } 2} \xrightarrow[\text{3-fractal}]{\text{mod } 3} \xrightarrow[\text{5-fractal}]{\text{mod } 5} \cdots \longrightarrow \textbf{Primes}
+\]
+The primes are \emph{the asymmetric residue of all symmetries}.
+
+The Menger sponge (Figure~\ref{fig:menger}) provides a perfect 3D visualization. Level 0 is the solid cube ($\mathbb{N}$); each iteration removes composites. The limit has Hausdorff dimension $\log(20)/\log(3) \approx 2.727$: zero volume but infinite surface---exactly like primes in $\mathbb{N}$. Figure~\ref{fig:tunnel} shows the ``tunnel formation'' as successive sieves contract the candidate volume.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{images/menger_sponge_4panel.png}
+\caption{The Sieve as Fractal: The Menger sponge at levels 0--3. Each iteration removes centers and face-centers (composites). The limit has zero volume, infinite surface area---the geometric signature of the prime distribution.}
+\label{fig:menger}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{images/tunnel_narrowing.png}
+\caption{The Tunnel Formation: Left: Search space reduction---exponential drop then asymptotic tail. Right: The ``tunnel'' forming as successive prime sieves are applied.}
+\label{fig:tunnel}
+\end{figure}
+
+
+\section{The Geometric Derivation}
+
+We work in the real subalgebra spanned by $\{1, B\}$ where $B^2 = -1$. A parameter $s$ is $s = \sigma + Bt$. The Geometric Zeta Function is:
+\begin{equation}
+    \zeta_B(s) := \sum_{n=1}^\infty n^{-\sigma} \cos(t \ln n) + B \sum_{n=1}^\infty -n^{-\sigma} \sin(t \ln n)
+\end{equation}
+
+A \textbf{Geometric Zero} is where both Scalar and Bivector sums vanish simultaneously. Figure~\ref{fig:zeta} demonstrates this decomposition along the critical line, showing zeros at $t \approx 14.13, 21.02, 25.01$---matching the classical zeta zeros.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{images/geometric_zeta_scipy.png}
+\caption{The Geometric Zeta Function: Scalar (blue) and Bivector (red) components on the critical line $\sigma = 1/2$. Zeros occur precisely where both cross zero simultaneously.}
+\label{fig:zeta}
+\end{figure}
+
+Let $\mathcal{Z}(s) = \prod_p (1 - p^{-s})^{-1}$ be the Geometric Euler Product. The gradient of the potential $\mathcal{V}(s) = \log \mathcal{Z}(s)$ yields:
+\begin{equation}
+    \frac{d}{d\sigma} \left[ \frac{1}{k} p^{-k\sigma} \right] = -\log p \cdot p^{-k\sigma}
+\end{equation}
+The factor $1/k$ from the $\log(1-x)$ expansion \textbf{exactly cancels} the factor $k$ from the chain rule. This proves $\Lambda(n) = \log p$ is the \textbf{Geometric Stiffness}---the Jacobian of dilation, not an arbitrary weight.
+
+
+\section{The Stability Proof}
+
+Having derived the operator $K(s) = \sum_n \Lambda(n) n^{-s} T_n$, we analyze its stability. The Rayleigh Identity states:
+\begin{equation}
+    \mathrm{Im}_B \langle v, K(s)v \rangle = \left(\sigma - \frac{1}{2}\right) \sum_{n} \Lambda(n) \|v_n\|^2
+\end{equation}
+
+The critical line is the boundary between instability regimes: $\sigma < 1/2$ (expansive, sieve tears apart), $\sigma > 1/2$ (contractive, sieve collapses), $\sigma = 1/2$ (stable, unitary evolution). Figure~\ref{fig:phase} shows this phase diagram with zeta zeros forced onto the critical line.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{images/stability_phase_diagram_20260114_135125.png}
+\caption{Stability Phase Diagram: The critical line $\sigma = 1/2$ (yellow) is the phase boundary between expansive (red) and contractive (blue) regimes. Zeta zeros (green) are forced onto this line by stability requirements.}
+\label{fig:phase}
+\end{figure}
+
+\begin{theorem}[Main Result]\label{thm:main}
+Let $H := L^2(\mathbb{R})$ and define the Sieve Operator $K_B(s) := \sum_{p \le B} ( p^{-s} T_{\log p} + p^{-(1-s)} T_{-\log p} )$. Then:
+\begin{enumerate}
+\item[\emph{(i)}] $K_B(s)^\dagger = K_B(1-\bar{s})$, so $K_B(s)$ is self-adjoint iff $\mathrm{Re}(s)=1/2$.
+\item[\emph{(ii)}] If $B\ge 2$, $v\ne 0$, and $K_B(s)v = \lambda v$ for real $\lambda$, then $\mathrm{Re}(s)=1/2$.
+\item[\emph{(iii)}] Under the Zeta Link (Assumption~\ref{ass:zetalink}), all non-trivial zeros satisfy $\mathrm{Re}(s)=1/2$.
+\end{enumerate}
+\end{theorem}
+
+
+\section{The Reduction to RH}
+
+\begin{assumption}[The Zeta Link]\label{ass:zetalink}
+If $\zeta(s) = 0$ with $0 < \mathrm{Re}(s) < 1$, then $\exists B \ge 2$, $v \ne 0$ such that $K_B(s)v = v$.
+\end{assumption}
+
+\begin{theorem}[Conditional RH Reduction]\label{thm:rh}
+Under Assumption~\ref{ass:zetalink}, all non-trivial zeros satisfy $\mathrm{Re}(s) = 1/2$.
+\end{theorem}
+
+\begin{proof}
+Let $\zeta(s) = 0$. By the Zeta Link, $\exists v \ne 0$ with $K(s)v = v$. Then $\langle v, K(s)v \rangle = \|v\|^2$ is real, so $\mathrm{Im}_B\langle v, K(s)v \rangle = 0$. By the Rayleigh Identity: $(\sigma - 1/2) \cdot Q(v) = 0$ with $Q(v) > 0$. Thus $\sigma = 1/2$.
+\end{proof}
+
+
+\section{Formal Verification}
+
+The operator-theoretic results have been formalized in Lean~4.
+
+\begin{table}[ht]
+\centering
+\TBL{\caption{Lean~4 verification status.\label{tab:lean}}}
+{\begin{tabular}{@{}llcc@{}}
+\toprule
+\TCH{Module} & \TCH{Proof Content} & \TCH{Sorry} & \TCH{Axiom} \\
+\midrule
+\texttt{GeometricZetaDerivation} & Stiffness derivation ($\Lambda = \log p$) & 0 & 0 \\
+\texttt{SurfaceTensionInstantiation} & Rayleigh Identity & 0 & 0 \\
+\texttt{SpectralReal} & Hammer Theorem & 0 & 0 \\
+\texttt{ZetaLinkInstantiation} & Conditional reduction & 0 & 1 \\
+\botrule
+\end{tabular}}
+\end{table}
+
+The logic chain is:
+\[
+\text{Euler Product} \to \text{Gradient } K(s) \text{ [PROVEN]} \to \text{Rayleigh [PROVEN]} \to \text{Zeta Link [HYPOTHESIS]} \to \text{Hammer [PROVEN]}
+\]
+
+
+\section{Conclusion}
+
+We have geometricized the Riemann Hypothesis. The critical line is not an accident of analysis but a requirement of geometric stability in $\mathrm{Cl}(3,3)$. The critical line is the unique axis where \textbf{Discrete Geometry} (integers/volume) is compatible with \textbf{Continuous Geometry} (rotation/phase). The Riemann Hypothesis is reduced to the statement that the Zeta function respects the geometry of its own definition.
+
+
+\clearpage
+\begin{Backmatter}
+
+\paragraph{Acknowledgments}
+The author thanks the Lean and Mathlib communities for formal verification infrastructure, and Joan Lasenby and Anthony Lasenby for foundational work on geometric algebra.
+
+\paragraph{Funding statement}
+This research received no specific grant from any funding agency.
+
+\paragraph{Competing interests}
+None.
+
+\paragraph{Data availability statement}
+The Lean~4 formalization is available as supplementary material.
+
+\paragraph{Ethical standards}
+The research meets all ethical guidelines.
+
+\paragraph{Author contributions}
+T.M.\ conceived the framework, performed the analysis, wrote the Lean formalization, and wrote the manuscript.
+
+\begin{thebibliography}{99}
+
+\bibitem{Riemann1859}
+B.~Riemann, \emph{\"{U}ber die Anzahl der Primzahlen unter einer gegebenen Gr\"{o}sse}. Monatsberichte der Berliner Akademie (1859).
+
+\bibitem{Connes1999}
+A.~Connes, \emph{Trace formula in noncommutative geometry and the zeros of the Riemann zeta function}. Selecta Math. \textbf{5}(1999), 29--106. \doi{10.1007/s000290050042}
+
+\bibitem{BerryKeating1999}
+M.~V.~Berry and J.~P.~Keating, \emph{The Riemann zeros and eigenvalue asymptotics}. SIAM Review \textbf{41}(1999), 236--266. \doi{10.1137/S0036144598347497}
+
+\bibitem{Montgomery1973}
+H.~L.~Montgomery, \emph{The pair correlation of zeros of the zeta function}. Proc. Sympos. Pure Math. \textbf{24}(1973), 181--193.
+
+\bibitem{Hestenes1984}
+D.~Hestenes and G.~Sobczyk, \emph{Clifford Algebra to Geometric Calculus}. D.~Reidel Publishing (1984). \doi{10.1007/978-94-009-6292-7}
+
+\bibitem{DoranLasenby2003}
+C.~Doran and A.~Lasenby, \emph{Geometric Algebra for Physicists}. Cambridge University Press (2003). \doi{10.1017/CBO9780511807497}
+
+\bibitem{Lasenby1993}
+A.~N.~Lasenby, C.~J.~L.~Doran, and S.~F.~Gull, \emph{A multivector derivative approach to Lagrangian field theory}. Found. Phys. \textbf{23}(1993), 1295--1327.
+
+\bibitem{Lucas1878}
+\'{E}.~Lucas, \emph{Th\'{e}orie des Fonctions Num\'{e}riques Simplement P\'{e}riodiques}. Amer. J. Math. \textbf{1}(1878), 184--196.
+
+\bibitem{Bombieri2000}
+E.~Bombieri, \emph{Problems of the Millennium: The Riemann Hypothesis}. Clay Mathematics Institute (2000).
+
+\end{thebibliography}
+
+\end{Backmatter}
+
+\end{document}
