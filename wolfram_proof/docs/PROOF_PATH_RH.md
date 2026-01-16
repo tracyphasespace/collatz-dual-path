@@ -305,9 +305,12 @@ that correlates with zeta zeros.
 
 | Result | Status | Path Forward |
 |--------|--------|--------------|
-| Fredholm identity det(I-K) = 1/ζ(s) | ⏳ HYPOTHESIS | Trace formula expansion |
-| ζ(s)=0 ⟹ K has eigenvalue 1 | ⏳ HYPOTHESIS | Follows from Fredholm identity |
+| Fredholm identity det(I-K) = 1/ζ(s) | ❌ **NOT CONFIRMED** | See FREDHOLM_TEST_RESULTS.md |
+| ζ(s)=0 ⟹ K has eigenvalue 1 | ❌ **NOT CONFIRMED** | Eigenvalues ≠ 1 at zeros |
 | Prime irreducibility essential | ✅ **CONFIRMED** | See PRIME_IRREDUCIBILITY_PROVEN.md |
+
+**NOTE:** The finite 2×2 rotor does NOT satisfy the Fredholm identity.
+An infinite-dimensional operator formulation may be required.
 
 ### 7.3 Experimental Validation Needed
 
