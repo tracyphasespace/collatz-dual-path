@@ -14,3 +14,48 @@ rev = "v4.14.0"
 
 [[lean_lib]]
 name = "Collatz"
+
+[[lean_lib]]
+name = "TrapdoorRatchet"
+
+[[lean_lib]]
+name = "CollatzCertificates"
+
+[[lean_lib]]
+name = "RHBridge"
+
+[[lean_lib]]
+name = "HardenedCertificates"
+
+[[lean_lib]]
+name = "CollatzHybrid"
+
+[[lean_lib]]
+name = "CertificateTable"
+
+[[lean_lib]]
+name = "AxiomRegistry"
+
+[[lean_lib]]
+name = "TurbulentVerification"
+
+[[lean_lib]]
+name = "CoreAxioms"
+
+[[lean_lib]]
+name = "CollatzLipschitz"
+
+[[lean_lib]]
+name = "CollatzSieve"
+
+[[lean_lib]]
+name = "TrapdoorStats"
+
+[[lean_lib]]
+name = "CertificateBatch"
+
+[[lean_lib]]
+name = "DescentPotential"
+
+[[lean_lib]]
+name = "DescentDepth"
