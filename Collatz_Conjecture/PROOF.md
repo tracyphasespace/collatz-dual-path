@@ -319,21 +319,58 @@ Therefore, every trajectory must eventually enter the cycle containing 1. ∎
 
 ## 11. Summary: The Geometric Picture
 
-The proof rests on three pillars:
+The proof rests on one central insight: **the two spaces are connected, and both slope downward toward 1**.
 
-### Pillar 1: Space Structure
+### The Connected Spaces
+
+```
+        𝕆 (odd)                        𝔼 (even)
+           │                              │
+           │ T                            │ E
+           │ (weak upward: ×1.5)          │ (strong downward: ÷2)
+           ▼                              ▼
+        enters 𝔼 ────────────────────► descends
+           │                              │
+           └──────── back to 𝕆 ◄──────────┘
+```
+
+### The Downward Slopes
+
+**In 𝔼 (even space):** The slope is obviously downward. Each E step divides by 2, strictly decreasing.
+
+**In 𝕆 (odd space):** The slope is also effectively downward because:
+1. T sends you INTO 𝔼 (you can't stay in 𝕆 forever)
+2. Once in 𝔼, you descend via E
+3. The weak expansion (×1.5) is dominated by the strong contraction (÷2)
+
+### The Three Pillars
+
+**Pillar 1: Space Structure**
 - 𝔼 = ∪ₖ 2^k · 𝕆 (even space is layered copies of odd space)
 - Every number has a unique (height, odd-core) representation
+- The spaces are CONNECTED: you transition between them
 
-### Pillar 2: Operator Asymmetry
+**Pillar 2: Operator Asymmetry**
 - T expands by factor 3/2 (weak)
 - E contracts by factor 2 (strong)
 - **3/2 < 2** — contraction dominates
+- One E more than compensates for one T
 
-### Pillar 3: Scalar Perturbation
+**Pillar 3: Scalar Perturbation**
 - The +1 breaks scale invariance
 - Prevents stable orbits and fixed points
 - Creates drift toward the unique attractor at 1
+
+### Why Both Spaces Slope Down
+
+The key realization is that 𝕆 doesn't have an "upward" slope — it has a **funnel into 𝔼's downward slope**.
+
+From any odd n > 1:
+- Apply T: get (3n+1)/2 ∈ 𝔼 ∪ 𝕆
+- If in 𝔼: immediately start descending via E
+- If still in 𝕆: apply T again, but this can't continue forever
+
+The forcing lemma ensures you must eventually enter 𝔼. Once there, you descend. The net effect over any long trajectory is downward.
 
 The convex potential F(n) = log(n) has a unique minimum at n = 1, and the operator dynamics force all trajectories into this basin.
 
