@@ -372,7 +372,42 @@ From any odd n > 1:
 
 The forcing lemma ensures you must eventually enter 𝔼. Once there, you descend. The net effect over any long trajectory is downward.
 
-The convex potential F(n) = log(n) has a unique minimum at n = 1, and the operator dynamics force all trajectories into this basin.
+### The Two Surfaces Visualization
+
+Think of 𝕆 and 𝔼 as two physical surfaces in space, both tilted toward a drain at n = 1:
+
+```
+                    Height (log n)
+                         │
+                         │    𝕆 surface (odd ramp)
+                         │   ╱
+                         │  ╱
+                         │ ╱  ↗ T "climbs" to higher launch point
+                         │╱
+         ════════════════╬══════════════════════
+                        ╱│╲
+                       ╱ │ ╲  𝔼 surface (even slide)
+                      ╱  │  ╲
+                     ╱   │   ╲  E "slides down"
+                    ╱    │    ↘
+                   ↙     │     ╲
+                  ╱      │      ╲
+                 ●───────┴───────→ n = 1 (drain)
+```
+
+**T doesn't make you "go up" — it moves you to a higher launch point on the slide.**
+
+It's like a water park:
+- **𝔼 is a water slide** going down (steep: ÷2 per step)
+- **𝕆 is a platform with stairs** leading UP to slide entrances
+- You climb the stairs (T: ×1.5) to reach a slide entrance
+- Then you slide down (E: ÷2, ÷2, ÷2...)
+- **The slide is steeper than the stairs** (0.693 > 0.405)
+- You always end up lower than where you started
+
+The "+1" in (3n+1) ensures you can't find a secret passage that avoids the slide — every path through 𝕆 eventually dumps you onto 𝔼's descent.
+
+The convex potential F(n) = log(n) has a unique minimum at n = 1, and the operator dynamics force all trajectories into this basin — like water finding the drain.
 
 ---
 

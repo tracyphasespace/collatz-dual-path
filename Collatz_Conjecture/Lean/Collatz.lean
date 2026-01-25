@@ -279,26 +279,44 @@ theorem no_multiplicative_cycle (k m : ℕ) (hk : 0 < k) (hm : 0 < m) :
   exact powers_coprime k m hk hm h3
 
 /-!
-## Part 8: Connected Spaces with Downward Slopes
+## Part 8: Connected Spaces with Downward Slopes (Two Surfaces Model)
 
 The key insight: 𝕆 and 𝔼 are connected, and BOTH slope downward toward 1.
 
+**The Two Surfaces Visualization:**
+
+Think of 𝕆 and 𝔼 as two physical surfaces, both tilted toward a drain at n = 1:
+
 ```
-        𝕆 (odd)                     𝔼 (even)
-           │                           │
-           │ T                         │ E
-           │ (slope: +0.405)           │ (slope: -0.693)
-           ▼                           ▼
-        enters 𝔼 ──────────────────► descends
-           │                           │
-           └───────── back to 𝕆 ◄──────┘
+                    Height (log n)
+                         │
+                         │    𝕆 surface (odd ramp)
+                         │   ╱
+                         │  ╱
+                         │ ╱  ↗ T "climbs" to higher launch point
+                         │╱
+         ════════════════╬══════════════════════
+                        ╱│╲
+                       ╱ │ ╲  𝔼 surface (even slide)
+                      ╱  │  ╲
+                     ╱   │   ╲  E "slides down"
+                    ╱    │    ↘
+                   ↙     │     ╲
+                  ╱      │      ╲
+                 ●───────┴───────→ n = 1 (drain)
 ```
 
-The spaces form a connected graph where:
-- 𝔼 has a steep downward slope (E contracts by 2)
-- 𝕆 connects INTO this downward funnel (T → 𝔼)
-- You cannot stay in 𝕆 forever (forcing lemma)
-- The net effect is always descent toward 1
+**T doesn't make you "go up" — it moves you to a higher launch point on the slide.**
+
+It's like a water park:
+- 𝔼 is a water slide going down (steep: ÷2 per step)
+- 𝕆 is a platform with stairs leading UP to slide entrances
+- You climb the stairs (T: ×1.5) to reach a slide entrance
+- Then you slide down (E: ÷2, ÷2, ÷2...)
+- The slide is steeper than the stairs (0.693 > 0.405)
+- You always end up lower than where you started
+
+The "+1" ensures you can't find a secret passage that avoids the slide.
 -/
 
 /-- T always sends odd numbers into ℕ⁺ (the result is always positive) -/
