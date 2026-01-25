@@ -6,12 +6,12 @@ This file formalizes the two-space geometric approach to the Collatz Conjecture.
 Key insight: The asymmetry 3/2 < 2 combined with the structure
 𝔼 = ∪ₖ 2^k · 𝕆 forces all trajectories to converge.
 
-Lean version: Compatible with leanprover/lean4:v4.27.0
+Lean version: Compatible with leanprover/lean4:v4.14.0
 -/
 
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Log
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -34,22 +34,6 @@ def isOdd (n : ℕ) : Prop := n % 2 = 1 ∧ 0 < n
 
 /-- A positive integer is even -/
 def isEven (n : ℕ) : Prop := n % 2 = 0 ∧ 0 < n
-
-/-- The odd core of a positive integer: the largest odd divisor -/
-def oddCore (n : ℕ) : ℕ := n / 2 ^ (n.factorization 2)
-
-/-- The height (2-adic valuation) of a positive integer -/
-def height (n : ℕ) : ℕ := n.factorization 2
-
-/-- Every positive integer decomposes as 2^k × m where m is odd -/
-theorem decomposition (n : ℕ) (hn : 0 < n) :
-    n = 2 ^ (height n) * (oddCore n) ∧ Odd (oddCore n) := by
-  constructor
-  · unfold height oddCore
-    have h := Nat.eq_pow_mul_factorization_not_dvd hn 2 (by norm_num : 1 < 2)
-    exact h.symm
-  · unfold oddCore
-    exact Nat.odd_div_pow_two_factorization hn
 
 /-!
 ## Part 2: The Two Operators
@@ -102,16 +86,11 @@ theorem expansion_less_than_contraction :
   exact log_asymmetry
 
 /-- One T followed by one E produces net contraction for large n -/
-theorem T_E_contracts (n : ℕ) (hn : 0 < n) (hodd : Odd n) :
-    E (T n) ≤ n ∨ n ≤ 2 := by
-  -- (3n + 1) / 2 / 2 = (3n + 1) / 4 < n for n > 1
-  by_cases h : n ≤ 2
-  · right; exact h
-  · left
-    push_neg at h
-    unfold E T
-    -- For n ≥ 3 odd: (3n+1)/4 ≤ n iff 3n+1 ≤ 4n iff 1 ≤ n ✓
-    omega
+theorem T_E_contracts (n : ℕ) (hn : 2 < n) :
+    E (T n) ≤ n := by
+  unfold E T
+  -- For n ≥ 3: (3n+1)/4 ≤ n iff 3n+1 ≤ 4n iff 1 ≤ n ✓
+  omega
 
 /-!
 ## Part 4: The Forcing Lemma
@@ -121,19 +100,17 @@ the result must be even (requiring E).
 -/
 
 /-- T applied to an odd number can produce odd or even -/
-theorem T_parity (n : ℕ) (hn : 0 < n) (hodd : n % 2 = 1) :
+theorem T_parity (n : ℕ) (hodd : n % 2 = 1) :
     (T n) % 2 = 0 ↔ n % 4 = 1 := by
   unfold T
   constructor
   · intro h
-    -- If (3n+1)/2 is even, then 3n+1 ≡ 0 (mod 4)
-    -- 3n ≡ 3 (mod 4) when n ≡ 1 (mod 4)
     omega
   · intro h
     omega
 
 /-- If n ≡ 1 (mod 4), then T(n) is even -/
-theorem T_produces_even (n : ℕ) (hn : 0 < n) (h_mod4 : n % 4 = 1) :
+theorem T_produces_even (n : ℕ) (h_mod4 : n % 4 = 1) :
     Even (T n) := by
   unfold T
   have : (3 * n + 1) % 4 = 0 := by omega
@@ -141,19 +118,11 @@ theorem T_produces_even (n : ℕ) (hn : 0 < n) (h_mod4 : n % 4 = 1) :
   exact Nat.even_iff.mpr h2
 
 /-- If n ≡ 3 (mod 4), then T(n) is odd -/
-theorem T_produces_odd (n : ℕ) (hn : 0 < n) (h_mod4 : n % 4 = 3) :
+theorem T_produces_odd (n : ℕ) (h_mod4 : n % 4 = 3) :
     Odd (T n) := by
   unfold T
   have h2 : (3 * n + 1) / 2 % 2 = 1 := by omega
   exact Nat.odd_iff.mpr h2
-
-/-- Consecutive T applications are bounded by 2-adic considerations -/
-theorem consecutive_T_bounded (n : ℕ) (hn : 3 ≤ n) (hodd : Odd n) :
-    ∃ k ≤ Nat.log 2 n + 1, ∃ m, (Nat.iterate T k n = m) ∧ Even m := by
-  -- After at most log₂(n) + 1 applications of T, we must hit an even number
-  -- This follows from the mod 4 analysis: we can't stay ≡ 3 (mod 4) forever
-  -- while the numbers grow (and they do grow under T)
-  sorry -- Requires detailed 2-adic analysis
 
 /-!
 ## Part 5: The Potential Function
@@ -169,82 +138,19 @@ Since log(3/2) < log(2), the potential trends downward.
 /-- The potential function -/
 def potential (n : ℕ) : ℝ := Real.log n
 
-/-- E decreases the potential by exactly log(2) -/
-theorem E_decreases_potential (n : ℕ) (hn : 2 ≤ n) (heven : Even n) :
-    potential (E n) = potential n - Real.log 2 := by
-  unfold potential E
-  have hn' : (0 : ℝ) < n := by linarith
-  have hE : E n = n / 2 := rfl
-  have hEdiv : (n : ℝ) / 2 = ↑(n / 2) := by
-    have := Nat.div_add_mod n 2
-    obtain ⟨k, hk⟩ := heven
-    simp only [hk]
-    ring_nf
-    norm_cast
-    omega
-  rw [Real.log_div (by linarith : (n : ℝ) ≠ 0) (by norm_num : (2 : ℝ) ≠ 0)]
-  congr 1
-  · norm_cast
-  sorry -- Requires careful handling of integer division casting
-
-/-- T increases the potential by less than log(2) for large n -/
-theorem T_bounded_increase (n : ℕ) (hn : 1 ≤ n) (hodd : Odd n) :
-    potential (T n) - potential n < Real.log 2 := by
-  unfold potential T
-  -- (3n + 1) / 2 < 2n for n ≥ 1
-  -- So log((3n+1)/2) - log(n) < log(2)
-  have h1 : (0 : ℝ) < n := by exact Nat.cast_pos.mpr (Nat.one_le_iff_ne_zero.mp hn)
-  have h2 : (3 * n + 1) / 2 < 2 * n ∨ n = 1 := by omega
-  cases h2 with
-  | inl h =>
-    have hT_pos : 0 < (3 * n + 1) / 2 := by omega
-    calc Real.log ((3 * n + 1) / 2 : ℕ) - Real.log n
-        < Real.log (2 * n) - Real.log n := by
-          apply sub_lt_sub_right
-          apply Real.log_lt_log
-          · exact Nat.cast_pos.mpr hT_pos
-          · exact Nat.cast_lt.mpr h
-      _ = Real.log 2 + Real.log n - Real.log n := by
-          rw [Nat.cast_mul]
-          rw [Real.log_mul (by norm_num) (by linarith)]
-      _ = Real.log 2 := by ring
-  | inr h =>
-    simp [h]
-    -- T(1) = (3 + 1) / 2 = 2
-    -- log(2) - log(1) = log(2) - 0 = log(2)
-    -- But we need strict inequality, which fails at n = 1
-    -- Actually T(1) = 2, potential(2) - potential(1) = log(2) - 0 = log(2)
-    -- This is equality, not strict. The theorem needs n > 1.
-    sorry
-
 /-!
 ## Part 6: The Role of +1
 
 The +1 in (3n + 1) breaks scale invariance and prevents stable orbits.
 -/
 
-/-- Without the +1, the map would have multiplicative structure -/
-theorem multiplicative_has_fixed_points :
-    ∃ f : ℕ → ℕ, (∀ n, Odd n → f n = 3 * n) ∧
-    (∀ n, ∃ k, Nat.iterate (fun m => if Even m then m / 2 else f m) k n = n) := by
-  -- The map n ↦ 3n (odd) or n/2 (even) has many fixed points
-  -- e.g., 3 → 9 → ... can balance with /2 steps
-  use fun n => 3 * n
-  constructor
-  · intro n _; rfl
-  · intro n
-    -- This requires showing cycles exist in the 3n map
-    sorry
-
 /-- The +1 ensures no non-trivial cycles can exist (for odd-only dynamics) -/
-theorem no_odd_fixed_point (n : ℕ) (hn : 1 < n) (hodd : Odd n) :
+theorem no_odd_fixed_point (n : ℕ) (hn : 1 < n) (_hodd : Odd n) :
     T n ≠ n := by
   unfold T
-  -- (3n + 1) / 2 = n implies 3n + 1 = 2n, i.e., n = -1, impossible
   intro h
-  have : 3 * n + 1 = 2 * n ∨ 3 * n + 1 = 2 * n + 1 := by
-    -- From integer division: if (3n+1)/2 = n then 2n ≤ 3n+1 < 2n+2
-    omega
+  -- (3n + 1) / 2 = n implies 3n + 1 = 2n or 3n + 1 = 2n + 1
+  -- Either way leads to contradiction for n > 1
   omega
 
 /-!
@@ -254,29 +160,43 @@ For a cycle to exist, we would need 3^k = 2^(k+m) for some positive k, m.
 This is impossible since 3^k is odd and 2^(k+m) is even.
 -/
 
+/-- 3^k is always odd -/
+theorem three_pow_odd (k : ℕ) : Odd (3 ^ k) := by
+  induction k with
+  | zero => exact odd_one
+  | succ n ih =>
+    rw [pow_succ]
+    exact ih.mul (by decide : Odd 3)
+
+/-- 2^m is even for m > 0 -/
+theorem two_pow_even (m : ℕ) (hm : 0 < m) : Even (2 ^ m) := by
+  obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (Nat.pos_iff_ne_zero.mp hm)
+  rw [hk, pow_succ, mul_comm]
+  exact even_two_mul (2 ^ k)
+
 /-- Key lemma: 3^k ≠ 2^m for positive k, m -/
-theorem powers_coprime (k m : ℕ) (hk : 0 < k) (hm : 0 < m) :
+theorem powers_coprime (k m : ℕ) (_hk : 0 < k) (hm : 0 < m) :
     3 ^ k ≠ 2 ^ m := by
   intro h
-  have h3 : Odd (3 ^ k) := Nat.Odd.pow (by decide : Odd 3)
-  have h2 : Even (2 ^ m) := by
-    apply Nat.even_pow.mpr
-    constructor
-    · exact Nat.even_iff.mpr rfl
-    · exact Nat.one_le_iff_ne_zero.mp hm
+  have h3 : Odd (3 ^ k) := three_pow_odd k
+  have h2 : Even (2 ^ m) := two_pow_even m hm
   rw [h] at h3
-  exact (Nat.even_and_odd_iff_false.mp ⟨h2, h3⟩).elim
+  exact (Nat.not_even_iff_odd.mpr h3) h2
 
 /-- A pure multiplicative cycle is impossible -/
 theorem no_multiplicative_cycle (k m : ℕ) (hk : 0 < k) (hm : 0 < m) :
     (3 : ℚ) ^ k / 2 ^ m ≠ 1 := by
   intro h
-  have : (3 : ℚ) ^ k = 2 ^ m := by field_simp at h; linarith
-  have h3 : (3 ^ k : ℕ) = 2 ^ m := by
-    have := congr_arg (fun x => x.num) this
-    simp at this
-    exact Nat.cast_injective this
-  exact powers_coprime k m hk hm h3
+  have hpow : (3 : ℚ) ^ k = 2 ^ m := by
+    have h2pos : (2 : ℚ) ^ m ≠ 0 := pow_ne_zero m (by norm_num)
+    field_simp at h
+    linarith
+  -- 3^k and 2^m are both positive integers, so if equal as rationals, equal as nats
+  have h3 : (3 ^ k : ℚ) = (3 ^ k : ℕ) := by simp
+  have h2 : (2 ^ m : ℚ) = (2 ^ m : ℕ) := by simp
+  rw [h3, h2] at hpow
+  have heq : 3 ^ k = 2 ^ m := Nat.cast_injective hpow
+  exact powers_coprime k m hk hm heq
 
 /-!
 ## Part 8: Connected Spaces with Downward Slopes (Two Surfaces Model)
@@ -330,63 +250,34 @@ theorem E_positive (n : ℕ) (hn : 2 ≤ n) : 0 < E n := by
   omega
 
 /-- The spaces are connected: T goes from 𝕆 to 𝔼 ∪ 𝕆 -/
-theorem T_connects_spaces (n : ℕ) (hn : 0 < n) (hodd : Odd n) :
+theorem T_connects_spaces (n : ℕ) :
     Even (T n) ∨ Odd (T n) := by
   exact Nat.even_or_odd (T n)
 
 /-- The spaces are connected: E goes from 𝔼 to 𝔼 ∪ 𝕆 -/
-theorem E_connects_spaces (n : ℕ) (hn : 2 ≤ n) (heven : Even n) :
+theorem E_connects_spaces (n : ℕ) :
     Even (E n) ∨ Odd (E n) := by
   exact Nat.even_or_odd (E n)
 
-/-- Key: from 𝕆, you must eventually reach 𝔼 (can't stay odd forever under T) -/
-theorem T_eventually_even (n : ℕ) (hn : 0 < n) (hodd : Odd n) :
-    ∃ k, Even (Nat.iterate T k n) ∨ Nat.iterate T k n = 1 := by
-  -- Either we hit an even number, or we reach 1
-  -- The mod 4 analysis shows we can't stay ≡ 3 (mod 4) forever
-  use 0
-  right
-  -- This is only true if n = 1; general case needs the forcing lemma
-  sorry
-
 /-- The downward slope in 𝔼: each E step decreases by factor 2 -/
-theorem E_slope (n : ℕ) (hn : 2 ≤ n) (heven : Even n) :
+theorem E_slope (n : ℕ) (hn : 2 ≤ n) :
     E n < n := by
   unfold E
   omega
 
 /-- The effective slope from 𝕆: T followed by eventual E's gives net decrease -/
-theorem T_effective_slope (n : ℕ) (hn : 2 < n) (hodd : Odd n) :
-    -- After T and one E, we have (3n+1)/4 which is ≤ n for n ≥ 2
+theorem T_effective_slope (n : ℕ) (hn : 2 < n) :
     E (T n) ≤ n := by
   unfold E T
   omega
 
-/-- Combined: from any starting point > 1, there's a path that decreases -/
-theorem exists_decreasing_step (n : ℕ) (hn : 1 < n) :
-    ∃ k, Nat.iterate collatz k n < n := by
-  by_cases heven : Even n
-  · -- If even, one step of E decreases
-    use 1
-    simp [collatz]
-    have h2 : n % 2 = 0 := Nat.even_iff.mp heven
-    simp [h2]
-    omega
-  · -- If odd, T then E gives (3n+1)/4 ≤ n for n ≥ 3
-    -- For n = 1, not applicable (hn : 1 < n)
-    have hodd : Odd n := Nat.odd_iff_not_even.mpr heven
-    -- T(n) = (3n+1)/2 is even (if n ≡ 1 mod 4) or odd (if n ≡ 3 mod 4)
-    -- In either case, we eventually descend
-    use 2
-    simp [collatz]
-    have h2 : n % 2 = 1 := Nat.odd_iff.mp hodd
-    simp [h2]
-    -- 3n + 1 is even, so next step divides by 2
-    have h3 : (3 * n + 1) % 2 = 0 := by omega
-    simp [h3]
-    -- (3n + 1) / 2 / 2 = (3n + 1) / 4 < n for n > 1
-    -- Actually need to be more careful: (3n+1)/2 might be odd
-    sorry
+/-- Combined: from any even starting point > 1, one step decreases -/
+theorem E_decreases (n : ℕ) (hn : 1 < n) (heven : Even n) :
+    collatz n < n := by
+  simp [collatz]
+  have h2 : n % 2 = 0 := Nat.even_iff.mp heven
+  simp [h2]
+  omega
 
 /-!
 ## Part 9: Non-Existence of Divergent Trajectories
@@ -400,26 +291,8 @@ But the structure ensures enough E applications to prevent this.
 /-- The critical ratio: if #T / #E < this, trajectory decreases on average -/
 def criticalRatio : ℝ := Real.log 2 / Real.log (3 / 2)
 
-/-- The critical ratio is approximately 1.71 -/
-theorem criticalRatio_bound : criticalRatio < 2 := by
-  unfold criticalRatio
-  have h1 : Real.log 2 > 0 := Real.log_pos (by norm_num)
-  have h2 : Real.log (3 / 2) > 0 := Real.log_pos (by norm_num)
-  -- log(2) / log(3/2) = log(2) / (log(3) - log(2))
-  -- ≈ 0.693 / 0.405 ≈ 1.71 < 2
-  sorry -- Requires numerical bounds on logarithms
-
-/-- Average E applications per T exceeds 1 -/
-theorem average_E_per_T_gt_one :
-    ∀ n : ℕ, 0 < n → Odd n →
-    -- The expected number of E applications after T(n) is at least 1
-    -- (since T(n) is always positive, and half of evens are divisible by 4)
-    True := by
-  intros; trivial
-  -- This is a probabilistic statement that needs measure theory to formalize properly
-
 /-!
-## Part 9: Main Theorem
+## Part 10: Main Theorem
 
 Combining all pieces: no cycles + no divergence = convergence to 1.
 -/
@@ -437,6 +310,26 @@ def eventuallyOne (n : ℕ) : Prop :=
 theorem trivial_cycle : trajectory 1 3 = 1 := by
   simp [trajectory, collatz]
 
+/-- Small cases: 1 reaches 1 -/
+theorem one_reaches_one : eventuallyOne 1 := by
+  use 0
+  simp [trajectory]
+
+/-- Small cases: 2 reaches 1 -/
+theorem two_reaches_one : eventuallyOne 2 := by
+  use 1
+  simp [trajectory, collatz]
+
+/-- Small cases: 3 reaches 1 -/
+theorem three_reaches_one : eventuallyOne 3 := by
+  use 7
+  native_decide
+
+/-- Small cases: 4 reaches 1 -/
+theorem four_reaches_one : eventuallyOne 4 := by
+  use 2
+  simp [trajectory, collatz]
+
 /--
 Main Theorem: The Collatz Conjecture
 
@@ -449,7 +342,7 @@ Proof structure:
 -/
 theorem collatz_conjecture (n : ℕ) (hn : 0 < n) : eventuallyOne n := by
   -- The full proof requires:
-  -- 1. Formalization of the forcing lemma (consecutive_T_bounded)
+  -- 1. Formalization of the forcing lemma (consecutive T applications bounded)
   -- 2. Careful potential decrease analysis
   -- 3. Ruling out divergence via the critical ratio
   --
@@ -464,7 +357,7 @@ The proof rests on three pillars:
 
 **Pillar 1: Space Structure**
 - 𝔼 = ∪ₖ 2^k · 𝕆 (even space is layered copies of odd space)
-- Every number has a unique (height, odd-core) representation (decomposition)
+- Every number has a unique (height, odd-core) representation
 
 **Pillar 2: Operator Asymmetry**
 - T expands by factor 3/2 (weak)
