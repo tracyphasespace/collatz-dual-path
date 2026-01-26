@@ -85,16 +85,23 @@ def verify (m r : ℕ) (c : Certificate m r) : Bool := c.isValid
 -- PART 3: VERIFIED RESIDUE CLASSES
 -- =================================================================
 
-/-- Case n ≡ 1 (mod 4): Two steps give (3n+1)/2
-    For n=1: goal state. For n=5: (3*5+1)/2 = 8 < 9... need more steps -/
-def cert_1_4 : Certificate 4 1 := {
-  steps := 4,
-  map := { a := 9, b := 2, d := 16 }
-}
+/-!
+**IMPORTANT NOTE ON CERTIFICATES**
+
+The certificates below are EXAMPLES showing the affine map structure.
+They are NOT used in the main proof (which uses axioms).
+
+KNOWN ISSUES (fixed in Certificates.lean):
+1. cert_1_4: Divisibility fails for n=5: (9*5+2)=47, 47%16=15≠0
+2. cert_7_32: Only works for n ≡ 7 (mod 128), not full n ≡ 7 (mod 32)
+
+See Certificates.lean for the corrected, verified certificate table.
+-/
 
 /-- Case n ≡ 3 (mod 8)
     Path: O-E-O-E-E (5 steps)
     Map: (9n + 5) / 16
+    For n=3: 9*3+5=32, 32%16=0 ✓, 32/16=2 < 3 ✓
     Result: 9 < 16 → Descent Verified -/
 def cert_3_8 : Certificate 8 3 := {
   steps := 5,
@@ -107,36 +114,30 @@ example : cert_3_8.isValid = true := by native_decide
 /-- Case n ≡ 5 (mod 8)
     Path: O-E-E-O-E (5 steps)
     Map: (9n + 2) / 16
-    Result: 9 < 16 → Descent Verified -/
-def cert_5_8 : Certificate 8 5 := {
+    For n=5: 9*5+2=47, 47%16=15≠0 - DIVISIBILITY FAILS
+    WARNING: This certificate is INVALID, kept for documentation only -/
+def cert_5_8_INVALID : Certificate 8 5 := {
   steps := 5,
   map := { a := 9, b := 2, d := 16 }
 }
 
-/-- Verification: cert_5_8 proves descent -/
-example : cert_5_8.isValid = true := by native_decide
+-- cert_5_8 verification REMOVED - certificate is invalid
 
-/-- Case n ≡ 7 (mod 32)
+/-- Case n ≡ 7 (mod 128) ONLY (not full mod 32!)
     Path: O-E-O-E-O-E-E-E-O-E-E (11 steps)
     Map: (81n + 65) / 128
-    Result: 81 < 128 → Descent Verified -/
-def cert_7_32 : Certificate 32 7 := {
+    WARNING: For n=39 ≡ 7 (mod 32): 81*39+65=3232, 3232%128=32≠0 - FAILS
+    This only works for n ≡ 7 (mod 128), not n ≡ 7 (mod 32) -/
+def cert_7_mod128_PARTIAL : Certificate 128 7 := {
   steps := 11,
   map := { a := 81, b := 65, d := 128 }
 }
 
-/-- Verification: cert_7_32 proves descent -/
-example : cert_7_32.isValid = true := by native_decide
+/-- Verification: cert_7_mod128 proves descent FOR n ≡ 7 (mod 128) only -/
+example : cert_7_mod128_PARTIAL.isValid = true := by native_decide
 
-/-- Case n ≡ 27 (mod 32) - The "Monster"
-    Requires ~96 steps with coefficients of magnitude 3^60.
-    Structure defined; verification requires high-compute kernel. -/
-def cert_27_32_structure : Certificate 32 27 := {
-  steps := 96,
-  -- Placeholder: actual coefficients are ~3^60 magnitude
-  -- The structure exists; only the numbers need computing
-  map := { a := 1, b := 0, d := 2 }
-}
+-- cert_27_32_structure REMOVED - was a fake placeholder with a=1,b=0,d=2
+-- which is just halving and doesn't match the actual 96-step trajectory
 
 -- =================================================================
 -- PART 4: DIRECT TRAJECTORY VERIFICATION

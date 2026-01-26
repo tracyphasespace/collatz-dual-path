@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic
-import CoreAxioms
+import Axioms
 
 noncomputable section
 
@@ -189,8 +189,8 @@ This is a corollary of CoreAxioms.geometric_dominance.
 After enough steps, trajectory must descend.
 -/
 theorem rh_descent_bound (n : ℕ) (hn : 4 < n) :
-    ∃ k : ℕ, k ≤ 100 * Nat.log2 n ∧ CoreAxioms.trajectory n k < n :=
-  CoreAxioms.geometric_dominance n hn
+    ∃ k : ℕ, k ≤ 100 * Nat.log2 n ∧ Axioms.trajectory n k < n :=
+  Axioms.geometric_dominance n hn
 
 /-!
 ## Part 6: Residue Class Descent
@@ -200,20 +200,20 @@ Other residue classes are verified via certificates in CertificateTable.lean.
 -/
 
 /-- Collatz function (local alias) -/
-def collatz (n : ℕ) : ℕ := CoreAxioms.collatz n
+def collatz (n : ℕ) : ℕ := Axioms.collatz n
 
 /-- Iterated Collatz (local alias) -/
-def trajectory (n : ℕ) : ℕ → ℕ := CoreAxioms.trajectory n
+def trajectory (n : ℕ) : ℕ → ℕ := Axioms.trajectory n
 
-/-- Hard case descent for residue 27 (from CoreAxioms) -/
+/-- Hard case descent for residue 27 (from Axioms) -/
 theorem descent_27_mod_32 (n : ℕ) (hn : 4 < n) (hmod : n % 32 = 27) :
-    ∃ k, CoreAxioms.trajectoryDescends n k = true :=
-  CoreAxioms.hard_case_27 n hn hmod
+    ∃ k, Axioms.trajectoryDescends n k = true :=
+  Axioms.hard_case_27 n hn hmod
 
-/-- Hard case descent for residue 31 (from CoreAxioms) -/
+/-- Hard case descent for residue 31 (from Axioms) -/
 theorem descent_31_mod_32 (n : ℕ) (hn : 4 < n) (hmod : n % 32 = 31) :
-    ∃ k, CoreAxioms.trajectoryDescends n k = true :=
-  CoreAxioms.hard_case_31 n hn hmod
+    ∃ k, Axioms.trajectoryDescends n k = true :=
+  Axioms.hard_case_31 n hn hmod
 
 /-!
 ## Part 7: The Unified Bridge Theorem

@@ -12,50 +12,54 @@ name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
 rev = "v4.14.0"
 
+# Core proof file
 [[lean_lib]]
 name = "Collatz"
 
+# Consolidated module: Centralized axiom registry
 [[lean_lib]]
-name = "TrapdoorRatchet"
+name = "Axioms"
 
+# Consolidated module: Certificate framework
 [[lean_lib]]
-name = "CollatzCertificates"
+name = "Certificates"
 
+# Consolidated module: Spectral gap and descent analysis
 [[lean_lib]]
-name = "RHBridge"
+name = "Analysis"
 
+# Consolidated module: Sieve-based proof approach
 [[lean_lib]]
-name = "HardenedCertificates"
+name = "Sieve"
 
+# Hybrid proof framework
 [[lean_lib]]
 name = "CollatzHybrid"
 
+# Trapdoor ratchet mechanism
 [[lean_lib]]
-name = "CertificateTable"
+name = "TrapdoorRatchet"
 
+# RH-Collatz bridge
 [[lean_lib]]
-name = "AxiomRegistry"
+name = "RHBridge"
 
+# Mersenne structural proofs
 [[lean_lib]]
-name = "TurbulentVerification"
+name = "MersenneProofs"
 
+# Complete Collatz integration
 [[lean_lib]]
-name = "CoreAxioms"
+name = "CollatzComplete"
 
+# Mersenne analysis
 [[lean_lib]]
-name = "CollatzLipschitz"
+name = "MersenneAnalysis"
 
+# Collatz Final
 [[lean_lib]]
-name = "CollatzSieve"
+name = "CollatzFinal"
 
+# Pillar IV: Entropy Braking
 [[lean_lib]]
-name = "TrapdoorStats"
-
-[[lean_lib]]
-name = "CertificateBatch"
-
-[[lean_lib]]
-name = "DescentPotential"
-
-[[lean_lib]]
-name = "DescentDepth"
+name = "CollatzEntropy"
