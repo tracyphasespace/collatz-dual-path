@@ -1,7 +1,7 @@
 name = "Collatz"
 version = "0.1.0"
 keywords = ["math", "collatz", "number-theory"]
-defaultTargets = ["Collatz"]
+defaultTargets = ["Proof_Complete"]
 
 [leanOptions]
 pp.unicode.fun = true
@@ -10,56 +10,68 @@ relaxedAutoImplicit = false
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
-rev = "v4.14.0"
+rev = "v4.27.0"
 
-# Core proof file
+# === SPECTRAL ANALYSIS (FULLY PROVEN) ===
+
+# Pillar 2: Spectral drift
 [[lean_lib]]
-name = "Collatz"
+name = "Pillar2_SpectralDrift"
 
-# Consolidated module: Centralized axiom registry
+# Pillar 3: Trapdoor ratchet
+[[lean_lib]]
+name = "Pillar3_TrapdoorLogic"
+
+# Combined spectral analysis
+[[lean_lib]]
+name = "SpectralAnalysis"
+
+# Final integration
+[[lean_lib]]
+name = "Proof_Complete"
+
+# === CORE MODULES ===
+
+# Centralized axiom registry
 [[lean_lib]]
 name = "Axioms"
 
-# Consolidated module: Certificate framework
+# Descent certificates (mod 32 coverage)
 [[lean_lib]]
 name = "Certificates"
 
-# Consolidated module: Spectral gap and descent analysis
-[[lean_lib]]
-name = "Analysis"
-
-# Consolidated module: Sieve-based proof approach
-[[lean_lib]]
-name = "Sieve"
-
-# Hybrid proof framework
-[[lean_lib]]
-name = "CollatzHybrid"
-
-# Trapdoor ratchet mechanism
-[[lean_lib]]
-name = "TrapdoorRatchet"
-
-# RH-Collatz bridge
-[[lean_lib]]
-name = "RHBridge"
-
-# Mersenne structural proofs
+# Original Mersenne proofs (FULLY PROVEN)
 [[lean_lib]]
 name = "MersenneProofs"
 
-# Complete Collatz integration
+# Original ratchet proofs (FULLY PROVEN)
 [[lean_lib]]
-name = "CollatzComplete"
+name = "TrapdoorRatchet"
 
-# Mersenne analysis
-[[lean_lib]]
-name = "MersenneAnalysis"
-
-# Collatz Final
+# Final proof via Mersenne analysis
 [[lean_lib]]
 name = "CollatzFinal"
 
-# Pillar IV: Entropy Braking
+# Hard case proofs via mod 128 subdivision
 [[lean_lib]]
-name = "CollatzEntropy"
+name = "HardCaseProofs"
+
+# Periodicity theory for Collatz parity patterns
+[[lean_lib]]
+name = "CollatzPeriodicity"
+
+# Geometric Algebra / Clifford intuition for spectral gap
+[[lean_lib]]
+name = "GeometricDominance"
+
+# Prime Manifold: 2-adic valuation and orthogonality analysis
+[[lean_lib]]
+name = "PrimeManifold"
+
+# Transcendental Obstruction: Why resonance is impossible
+[[lean_lib]]
+name = "TranscendentalObstruction"
+
+# Probabilistic Descent: Entropy Brake and Density Hypothesis
+[[lean_lib]]
+name = "ProbabilisticDescent"
