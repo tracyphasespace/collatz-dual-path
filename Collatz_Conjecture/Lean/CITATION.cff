@@ -16,7 +16,7 @@ authors:
 version: "1.0.0"
 date-released: "2026-01-27"
 license: MIT
-repository-code: "https://github.com/tracymcsheery/collatz-dual-path"
+repository-code: "https://github.com/tracyphasespace/collatz-dual-path"
 keywords:
   - Collatz conjecture
   - formal verification
