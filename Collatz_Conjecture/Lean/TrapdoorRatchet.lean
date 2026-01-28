@@ -1,4 +1,3 @@
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Log
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
